@@ -26,6 +26,6 @@ impl GameMap {
     }
 
     pub fn out_of_bounds(self, x: u8, y: u8) -> bool {
-        x < 0 || x >= self.map.len() as u8 || y < 0 || y >= self.map.len() as u8
+        x >= self.map.len() as u8 || y >= self.map.len() as u8
     }
 }

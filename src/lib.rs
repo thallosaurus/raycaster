@@ -93,7 +93,7 @@ pub fn main() -> Result<(), JsValue> {
     Ok(())
 }
 
-fn game_loop(ctx: &CanvasRenderingContext2d, player: &Player, map: &GameMap, ts: f64) {
+fn game_loop(ctx: &CanvasRenderingContext2d, player: &Player, map: &GameMap, _ts: f64) {
     render::clear(ctx);
     //player.get_mut().move_player();
 
