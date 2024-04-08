@@ -1,3 +1,6 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+
 use wasm_bindgen::JsCast;
 use wasm_bindgen::JsValue;
 use web_sys::{js_sys::Math, CanvasRenderingContext2d};
@@ -9,7 +12,9 @@ fn fix_fish_eye(distance: f64, angle: f64, player_angle: f64) -> f64 {
     distance * Math::cos(diff)
 }
 
-pub fn render_scene(ctx: &CanvasRenderingContext2d, player: &Player, rays: &Vec<Collision>) {
+pub fn render_scene(ctx: &CanvasRenderingContext2d, player: Rc<RefCell<Player>>, rays: &Vec<Collision>) {
+    let player = player.as_ref().borrow();
+
     let cell_size = CELL_SIZE as f64;
     for (i, ray) in rays.iter().enumerate() {
         let distance = fix_fish_eye(ray.distance, ray.angle, player.angle);
@@ -59,13 +64,14 @@ pub fn clear(ctx: &CanvasRenderingContext2d) {
 
 pub fn draw_minimap(
     ctx: &CanvasRenderingContext2d,
-    player: &Player,
+    player: Rc<RefCell<Player>>,
     map: &GameMap,
     rays: &Vec<Collision>,
     scale: f64,
 ) {
     let cell_size = scale * (CELL_SIZE as f64);
     let (pos_x, pos_y) = (0.0, 0.0);
+    let player = player.as_ref().borrow();
 
     {
         for y in 0..map.height {

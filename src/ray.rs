@@ -1,23 +1,28 @@
+use std::{borrow::Borrow, cell::RefCell, rc::Rc};
+
 use web_sys::js_sys::Math;
 use crate::{get_fov, map::GameMap, player::Player, CELL_SIZE};
 
 static PI: f64 = 3.14159265359_f64;
 
-pub fn get_rays(player: &Player, canvas_dimensions: (u32, u32), map: &GameMap) -> Vec<Collision> {
-    let initial_angle = (player.angle - get_fov()) / 2.0_f64;
+pub fn get_rays(player: &RefCell<Player>, canvas_dimensions: (u32, u32), map: &GameMap) -> Vec<Collision> {
+    let p = player.borrow();
+
+    let initial_angle = (p.angle - get_fov()) / 2.0_f64;
     let number_of_rays = canvas_dimensions.0;
     let angle_step = get_fov() / number_of_rays as f64;
     (0..number_of_rays)
         .into_iter()
         .map(|v| {
             let angle = initial_angle + (v as f64) * angle_step;
-            let ray = cast_ray(angle, player, map);
+            let ray = cast_ray(angle, &p, map);
             ray
         })
         .collect()
 }
 
 fn cast_ray(angle: f64, player: &Player, map: &GameMap) -> Collision {
+    
     let v_collision = get_v_collision(angle, player, map);
     let h_collision = get_h_collision(angle, player, map);
 
@@ -31,6 +36,7 @@ fn cast_ray(angle: f64, player: &Player, map: &GameMap) -> Collision {
 fn get_v_collision(angle: f64, player: &Player, map: &GameMap) -> Collision {
     let right = Math::abs(Math::floor(angle - PI / 2.0));
     let cell_size = CELL_SIZE as f64;
+    //let player = player.as_ref().borrow();
 
     let first_x = if right > 0.0 {
          Math::floor(player.x / cell_size) * cell_size + cell_size
@@ -81,6 +87,7 @@ fn get_v_collision(angle: f64, player: &Player, map: &GameMap) -> Collision {
 fn get_h_collision(angle: f64, player: &Player, map: &GameMap) -> Collision {
     let up = Math::abs(Math::floor(angle / PI) % 2.0);
     let cell_size = CELL_SIZE as f64;
+    //let player = player.as_ref().borrow();
 
     let first_y = if up > 0.0 {
         Math::floor(player.y / cell_size) * cell_size

@@ -39,9 +39,9 @@ pub fn main() -> Result<(), JsValue> {
     canvas.set_id("main_canvas");
     body.append_child(&canvas)?;
 
-    let mut player = Rc::new(RefCell::new(Player::new()));
+    let player = Rc::new(RefCell::new(Player::new()));
 
-    init_keyboard(&canvas, player)?;
+    init_keyboard(&canvas, player.clone())?;
 
     // Gather 2d Context
     let context = canvas
@@ -89,7 +89,7 @@ pub fn main() -> Result<(), JsValue> {
             .expect("performance should be available");
         let now = performance.now();
 
-        game_loop(&context, &player.borrow(), &map, now - runtime_now);
+        game_loop(&context, player.clone(), &map, now - runtime_now);
         request_animation_frame(f.borrow().as_ref().unwrap());
     }));
     request_animation_frame(g.borrow().as_ref().unwrap());
@@ -97,9 +97,11 @@ pub fn main() -> Result<(), JsValue> {
     Ok(())
 }
 
-fn game_loop(ctx: &CanvasRenderingContext2d, player: &Player, map: &GameMap, _ts: f64) {
+fn game_loop(ctx: &CanvasRenderingContext2d, player: Rc<RefCell<Player>>, map: &GameMap, _ts: f64) {
     render::clear(ctx);
-    //player.get_mut().move_player();
+    player.borrow_mut().move_player();
+
+    let p = player.as_ref();
 
     let window = window();
     let canvas_dimensions = (
@@ -107,8 +109,8 @@ fn game_loop(ctx: &CanvasRenderingContext2d, player: &Player, map: &GameMap, _ts
         window.inner_height().unwrap().as_f64().unwrap() as u32,
     );
     let rays = get_rays(&player, canvas_dimensions, map);
-    render::render_scene(ctx, &player, &rays);
-    render::draw_minimap(ctx, player, map, &rays, 1.0)
+    render::render_scene(ctx, player.clone(), &rays);
+    render::draw_minimap(ctx, player.clone(), map, &rays, 1.0)
 }
 
 fn window() -> web_sys::Window {

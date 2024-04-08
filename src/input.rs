@@ -1,5 +1,5 @@
 use std::{
-    borrow::BorrowMut,
+    //borrow::BorrowMut,
     cell::RefCell,
     ops::{Deref, DerefMut},
     rc::Rc,
@@ -12,26 +12,31 @@ use crate::{player::Player, window};
 
 pub fn init_keyboard(canvas: &HtmlCanvasElement, p: Rc<RefCell<Player>>) -> Result<(), JsValue> {
     let document = window().document().unwrap();
-    //let p = *p.bo;
-    //let rc = p.clone();
-    //let mut p = Box::new(p);
 
-    //let pl = Rc::clone(&rc);
+    //capture mouse
     {
-        let func = move |_event: MouseEvent| {
-            console::log_1(&JsValue::from_str("Mousemove"));
+        let c = Rc::new(canvas);
+        let canvas_click = Closure::<dyn FnMut()>::new(move || {
+
+        });
+    }
+    {
+        let p = p.clone();
+        let func = move |event: MouseEvent| {
+            //console::log_1(&JsValue::from_str("Mousemove"));
 
             //let pl = p.to_owned();
             //rc.borrow_mut().set_angle(Math::random() * 10.0);
             //p.set_angle(Math::random() * 10.0);
-            p.borrow_mut().set_angle(10.0);
-            
+            //p.borrow_mut().set_angle(Math::random() * 10.0);
+            p.borrow_mut().set_angle(event.movement_x() as f64);
+
             //pl.borrow()
-            
-            //let debug = format!("{:?}", pl);
-            
-            //console::log_1(&JsValue::from_str(debug.as_str()));
-            
+
+            let debug = format!("{:?}", p);
+
+            console::log_1(&JsValue::from_str(debug.as_str()));
+
             /*let rc = Rc::clone(p);
             let mut rc = rc.borrow_mut();
             let rc = rc.deref_mut();
@@ -39,7 +44,7 @@ pub fn init_keyboard(canvas: &HtmlCanvasElement, p: Rc<RefCell<Player>>) -> Resu
         };
 
         let mousemove_closure = Closure::<dyn FnMut(MouseEvent)>::new(func);
-        
+
         document.add_event_listener_with_callback(
             "mousemove",
             mousemove_closure.as_ref().unchecked_ref(),
@@ -48,23 +53,23 @@ pub fn init_keyboard(canvas: &HtmlCanvasElement, p: Rc<RefCell<Player>>) -> Resu
         mousemove_closure.forget();
     }
 
-    /*{
-        let pl = rc.clone();
+    {
+        let p = p.clone();
         let keydown_closure = Closure::<dyn FnMut(KeyboardEvent)>::new(move |e: KeyboardEvent| {
             //let p = p.clone();
             //web_sys::console::log_1(&JsValue::from_str(e.key().as_str()));
             //p.set_angle(event.movement_x() as f64);
 
-            let mut pp = pl.borrow();
+            let mut p = p.borrow_mut();
 
             if e.key() == "w" {
-                pp.borrow_mut().set_speed(2);
+                p.set_speed(2);
             }
             if e.key() == "s" {
                 //web_sys::console::log_1(&JsValue::from_str("Arrow Down"));
-                pp.borrow_mut().set_speed(-2);
+                p.set_speed(-2);
             }
-            let debug = format!("{:?}", pl);
+            let debug = format!("{:?}", p);
             console::log_1(&JsValue::from_str(debug.as_str()));
         });
 
@@ -73,11 +78,26 @@ pub fn init_keyboard(canvas: &HtmlCanvasElement, p: Rc<RefCell<Player>>) -> Resu
             keydown_closure.as_ref().unchecked_ref(),
         )?;
         keydown_closure.forget();
-    }*/
+    }
 
     /*let click_closure = Closure::new(|| {
 
     })*/
+
+    {
+        let p = p.clone();
+        let keyup_closure = Closure::<dyn FnMut(KeyboardEvent)>::new(move |e: KeyboardEvent| {
+            //let p = p.clone();
+            //web_sys::console::log_1(&JsValue::from_str(e.key().as_str()));
+            let mut p = p.borrow_mut();
+            if e.key() == "w" || e.key() == "s" {
+                p.set_speed(0);
+            }
+        });
+
+        document.add_event_listener_with_callback("keyup", keyup_closure.as_ref().unchecked_ref())?;
+        keyup_closure.forget();
+    }
 
     /*
 

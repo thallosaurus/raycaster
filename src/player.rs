@@ -4,7 +4,7 @@ use web_sys::js_sys::{wasm_bindgen, Math};
 use crate::CELL_SIZE;
 
 #[wasm_bindgen]
-#[derive(Clone, Copy, Debug)]
+#[derive(Debug)]
 pub struct Player {
     pub x: f64,
     pub y: f64,
@@ -23,19 +23,37 @@ impl Player {
             x: 2.0,
             y: 2.0,
             angle: 0.0_f64.to_radians(),
-            speed: 2
+            speed: 0
         }
     }
-    pub fn move_player(mut self) {
+
+    pub fn move_player(&mut self) {
         self.x += Math::cos(self.angle) * self.speed as f64;
         self.y += Math::sin(self.angle) * self.speed as f64;
     }
 
-    pub fn set_speed(mut self, speed: i32) {
+    pub fn set_speed(&mut self, speed: i32) {
         self.speed = speed;
     }
 
-    pub fn set_angle(mut self, angle: f64) {
+    pub fn set_angle(&mut self, angle: f64) {
         self.angle += angle.to_radians()
+    }
+}
+
+impl Copy for Player {
+
+}
+
+impl Clone for Player {
+    fn clone(&self) -> Player {
+        let p = Self {
+            x: self.x,
+            y: self.y,
+            angle: self.angle,
+            speed: self.speed
+        };
+
+        p
     }
 }
