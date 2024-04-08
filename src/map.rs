@@ -20,9 +20,10 @@ impl Default for GameMap {
 }
 
 impl GameMap {
-    pub fn get_xy(self, x: u8, y: u8) -> u8 {
-        let index: usize = ((x * self.width) * y).into();
-        self.map[index]
+    pub fn get_xy(self, x: u8, y: u8) -> Option<u8> {
+        let index: usize = ((y * self.height) + x).into();
+
+        self.map.get(index).copied()
     }
 
     pub fn out_of_bounds(self, x: u8, y: u8) -> bool {

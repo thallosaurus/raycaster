@@ -65,12 +65,9 @@ fn get_v_collision(angle: f64, player: &Player, map: &GameMap) -> Collision {
             break;
         }
 
-        wall = map.get_xy(cell_x, cell_y);
-        if wall == 0 {
+        if let Some(_) = map.get_xy(cell_x, cell_y) {
             next_x += x_a;
             next_y += y_a;
-        } else {
-
         }
     }
 
@@ -117,12 +114,17 @@ fn get_h_collision(angle: f64, player: &Player, map: &GameMap) -> Collision {
             break;
         }
 
-        wall = map.get_xy(cell_x, cell_y);
+        if let Some(_) = map.get_xy(cell_x, cell_y) {
+            next_x += x_a;
+            next_y += y_a;
+        }
+
+        /*wall = map.get_xy(cell_x, cell_y);
 
         if wall > 0 {
             next_x += x_a;
             next_y += y_a;
-        }
+        }*/
     }
 
     Collision {

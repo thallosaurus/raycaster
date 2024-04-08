@@ -4,6 +4,7 @@ use web_sys::js_sys::{wasm_bindgen, Math};
 use crate::CELL_SIZE;
 
 #[wasm_bindgen]
+#[derive(Clone, Copy, Debug)]
 pub struct Player {
     pub x: f64,
     pub y: f64,
@@ -16,11 +17,13 @@ impl Player {
 
     #[wasm_bindgen(constructor)]
     pub fn new() -> Self {
+        let cell_size = CELL_SIZE as f64;
+
         Self {
-            x: (CELL_SIZE * 2) as f64,
-            y: (CELL_SIZE * 2) as f64,
-            angle: 120.0_f64.to_radians(),
-            speed: -1
+            x: 2.0,
+            y: 2.0,
+            angle: 0.0_f64.to_radians(),
+            speed: 2
         }
     }
     pub fn move_player(mut self) {

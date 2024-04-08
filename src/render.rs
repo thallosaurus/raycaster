@@ -65,52 +65,58 @@ pub fn draw_minimap(
     scale: f64,
 ) {
     let cell_size = scale * (CELL_SIZE as f64);
-
     let (pos_x, pos_y) = (0.0, 0.0);
 
-    for y in 0..map.height {
-        for x in 0..map.width {
-            let cell = map.get_xy(x, y);
+    {
+        for y in 0..map.height {
+            for x in 0..map.width {
 
-            if cell == 1 {
-                ctx.set_fill_style(&JsValue::from_str("grey"));
-                ctx.fill_rect(
-                    pos_x + (x as f64) * cell_size,
-                    pos_y + (y as f64) * cell_size,
-                    cell_size,
-                    cell_size,
-                );
+                if let Some(_) = map.get_xy(x, y) {
+                    ctx.set_fill_style(&JsValue::from_str("grey"));
+                    ctx.fill_rect(
+                        pos_x + (x as f64) * cell_size,
+                        pos_y + (y as f64) * cell_size,
+                        cell_size,
+                        cell_size,
+                    );
+                }
             }
         }
     }
 
-    ctx.set_fill_style(&JsValue::from_str("blue"));
-    ctx.fill_rect(
-        pos_x + player.x * scale * 10.0 / 2.0,
-        pos_y + player.y * scale * 10.0 / 2.0,
-        10.0,
-        10.0,
-    );
+    {
+        ctx.set_fill_style(&JsValue::from_str("blue"));
+        ctx.fill_rect(
+            pos_x + player.x * scale * 10.0 / 2.0,
+            pos_y + player.y * scale * 10.0 / 2.0,
+            10.0,
+            10.0,
+        );
+    }
 
-    ctx.set_stroke_style(&JsValue::from_str("blue"));
-    ctx.begin_path();
-    ctx.move_to(player.x * scale, player.y * scale);
-    ctx.line_to(
-        (player.x + Math::cos(player.angle) * 20.0) * scale,
-        (player.y + Math::sin(player.angle) * 20.0) * scale,
-    );
-    ctx.close_path();
-    ctx.stroke();
-
-    ctx.set_stroke_style(&JsValue::from_str("yellow"));
-    rays.iter().for_each(|ray| {
+    {
+        ctx.set_stroke_style(&JsValue::from_str("blue"));
         ctx.begin_path();
         ctx.move_to(player.x * scale, player.y * scale);
         ctx.line_to(
-            (player.x + Math::cos(ray.angle) * ray.distance) * scale,
-            (player.y + Math::sin(ray.angle) * ray.distance) * scale,
+            (player.x + Math::cos(player.angle) * 20.0) * scale,
+            (player.y + Math::sin(player.angle) * 20.0) * scale,
         );
         ctx.close_path();
         ctx.stroke();
-    });
+    }
+
+    {
+        ctx.set_stroke_style(&JsValue::from_str("yellow"));
+        rays.iter().for_each(|ray| {
+            ctx.begin_path();
+            ctx.move_to(player.x * scale, player.y * scale);
+            ctx.line_to(
+                (player.x + Math::cos(ray.angle) * ray.distance) * scale,
+                (player.y + Math::sin(ray.angle) * ray.distance) * scale,
+            );
+            ctx.close_path();
+            ctx.stroke();
+        });
+    }
 }

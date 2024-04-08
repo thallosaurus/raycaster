@@ -5,8 +5,9 @@ mod render;
 mod utils;
 mod input;
 
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::RefCell, ops::Deref, rc::Rc};
 
+use input::init_keyboard;
 use map::GameMap;
 use player::Player;
 use ray::get_rays;
@@ -38,7 +39,9 @@ pub fn main() -> Result<(), JsValue> {
     canvas.set_id("main_canvas");
     body.append_child(&canvas)?;
 
-    let player = Rc::new(RefCell::new(Player::new()));
+    let mut player = Rc::new(RefCell::new(Player::new()));
+
+    init_keyboard(&canvas, player)?;
 
     // Gather 2d Context
     let context = canvas
@@ -78,6 +81,7 @@ pub fn main() -> Result<(), JsValue> {
     let f = Rc::new(RefCell::new(None));
     let g = f.clone();
 
+    let player = Rc::clone(&player);
     *g.borrow_mut() = Some(Closure::<dyn FnMut()>::new(move || {
         let window = web_sys::window().expect("no global window found in this context");
         let performance = window
