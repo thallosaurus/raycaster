@@ -1,7 +1,7 @@
 use std::{borrow::Borrow, cell::RefCell, rc::Rc};
 
 use web_sys::js_sys::Math;
-use crate::{get_fov, map::GameMap, player::Player, CELL_SIZE};
+use crate::{get_fov, map::{GameMap, MapElement}, player::Player, CELL_SIZE};
 
 static PI: f64 = 3.14159265359_f64;
 
@@ -54,7 +54,7 @@ fn get_v_collision(angle: f64, player: &Player, map: &GameMap) -> Collision {
 
     let y_a = x_a * Math::tan(angle);
 
-    let mut wall: u8 = 0;
+    let wall: u8 = 0;
     let mut next_x = first_x;
     let mut next_y = first_y;
     
@@ -71,9 +71,19 @@ fn get_v_collision(angle: f64, player: &Player, map: &GameMap) -> Collision {
             break;
         }
 
-        if let Some(_) = map.get_xy(cell_x, cell_y) {
-            next_x += x_a;
-            next_y += y_a;
+        /*if let Some(w) = map.get_xy(cell_x, cell_y) {
+            if w == 0 {
+                next_x += x_a;
+                next_y += y_a;
+            }
+        }*/
+        let d = map.get(cell_x, cell_y);
+        match d {
+            MapElement::Void => {
+                next_x += x_a;
+                next_y += y_a;
+            },
+            _ => {}
         }
     }
 
@@ -105,7 +115,7 @@ fn get_h_collision(angle: f64, player: &Player, map: &GameMap) -> Collision {
 
     let x_a = y_a / Math::tan(angle);
 
-    let mut wall = 0;
+    let wall = 0;
     let mut next_x = first_x;
     let mut next_y = first_y;
 
@@ -121,16 +131,18 @@ fn get_h_collision(angle: f64, player: &Player, map: &GameMap) -> Collision {
             break;
         }
 
-        if let Some(_) = map.get_xy(cell_x, cell_y) {
-            next_x += x_a;
-            next_y += y_a;
+        let d = map.get(cell_x, cell_y);
+
+        match d {
+            MapElement::Void => {
+                next_x += x_a;
+                next_y += y_a;
+            },
+            _ => {}
         }
 
-        /*wall = map.get_xy(cell_x, cell_y);
-
-        if wall > 0 {
-            next_x += x_a;
-            next_y += y_a;
+        /*if let Some(w) = map.get_xy(cell_x, cell_y) {
+            if w == 0 {
         }*/
     }
 

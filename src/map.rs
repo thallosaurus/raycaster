@@ -1,3 +1,5 @@
+use web_sys::console;
+
 #[derive(Clone, Copy)]
 pub struct GameMap {
     map: [u8; 49],
@@ -26,7 +28,33 @@ impl GameMap {
         self.map.get(index).copied()
     }
 
+    pub fn get(self, x: u8, y: u8) -> MapElement {
+        let xy = self.get_xy(x, y);
+
+        MapElement::from(xy)
+    }
+
     pub fn out_of_bounds(self, x: u8, y: u8) -> bool {
         x >= self.map.len() as u8 || y >= self.map.len() as u8
+    }
+}
+
+pub enum MapElement {
+    Void,
+    Wall,
+}
+
+impl From<Option<u8>> for MapElement {
+    fn from(value: Option<u8>) -> Self {
+        match value {
+            Some(n) => {
+                match n {
+                    1 => Self::Wall,
+                    0 => Self::Void,
+                    _ => Self::Wall
+                }
+            },
+            None => Self::Void,
+        }
     }
 }

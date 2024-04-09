@@ -5,7 +5,7 @@ mod render;
 mod utils;
 mod input;
 
-use std::{cell::RefCell, ops::Deref, rc::Rc};
+use std::{cell::RefCell, rc::Rc};
 
 use input::init_keyboard;
 use map::GameMap;
@@ -101,8 +101,6 @@ fn game_loop(ctx: &CanvasRenderingContext2d, player: Rc<RefCell<Player>>, map: &
     render::clear(ctx);
     player.borrow_mut().move_player();
 
-    let p = player.as_ref();
-
     let window = window();
     let canvas_dimensions = (
         window.inner_width().unwrap().as_f64().unwrap() as u32,
@@ -124,7 +122,7 @@ fn request_animation_frame(f: &Closure<dyn FnMut()>) {
 }
 
 fn get_fov() -> f64 {
-    60.0_f64.to_radians()
+    120.0_f64.to_radians()
 }
 
 fn get_screen_height() -> f64 {

@@ -77,8 +77,12 @@ pub fn draw_minimap(
         for y in 0..map.height {
             for x in 0..map.width {
 
-                if let Some(_) = map.get_xy(x, y) {
-                    ctx.set_fill_style(&JsValue::from_str("grey"));
+                if let Some(w) = map.get_xy(x, y) {
+                    if w == 0 {
+                        ctx.set_fill_style(&JsValue::from_str("transparent"));
+                    } else {
+                        ctx.set_fill_style(&JsValue::from_str("grey"));
+                    }
                     ctx.fill_rect(
                         pos_x + (x as f64) * cell_size,
                         pos_y + (y as f64) * cell_size,
@@ -93,8 +97,8 @@ pub fn draw_minimap(
     {
         ctx.set_fill_style(&JsValue::from_str("blue"));
         ctx.fill_rect(
-            pos_x + player.x * scale * 10.0 / 2.0,
-            pos_y + player.y * scale * 10.0 / 2.0,
+            pos_x + player.x - 5.0,
+            pos_y + player.y - 5.0,
             10.0,
             10.0,
         );
