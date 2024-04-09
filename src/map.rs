@@ -1,23 +1,20 @@
-use web_sys::console;
-
 #[derive(Clone, Copy)]
 pub struct GameMap {
     map: [u8; 49],
     pub width: u8,
-    pub height: u8
+    pub height: u8,
 }
 
 impl Default for GameMap {
     fn default() -> Self {
-        Self { map: [
-            1, 1, 1, 1, 1, 1, 1,
-            1, 0, 0, 0, 0, 0, 1,
-            1, 0, 1, 1, 0, 1, 1,
-            1, 0, 0, 0, 0, 0, 1,
-            1, 0, 1, 0, 1, 0, 1,
-            1, 0, 1, 0, 1, 0, 1,
-            1, 1, 1, 1, 1, 1, 1,
-        ], width: 7, height: 7 }
+        Self {
+            map: [
+                1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 1,
+                1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1,
+            ],
+            width: 7,
+            height: 7,
+        }
     }
 }
 
@@ -47,14 +44,21 @@ pub enum MapElement {
 impl From<Option<u8>> for MapElement {
     fn from(value: Option<u8>) -> Self {
         match value {
-            Some(n) => {
-                match n {
-                    1 => Self::Wall,
-                    0 => Self::Void,
-                    _ => Self::Wall
-                }
+            Some(n) => match n {
+                1 => Self::Wall,
+                0 => Self::Void,
+                _ => Self::Wall,
             },
             None => Self::Void,
+        }
+    }
+}
+
+impl Into<u8> for MapElement {
+    fn into(self) -> u8 {
+        match self {
+            MapElement::Void => 0,
+            MapElement::Wall => 1,
         }
     }
 }

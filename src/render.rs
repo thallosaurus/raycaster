@@ -109,8 +109,8 @@ pub fn draw_minimap(
         ctx.begin_path();
         ctx.move_to(player.x * scale, player.y * scale);
         ctx.line_to(
-            (player.x + Math::cos(player.angle) * 20.0) * scale,
-            (player.y + Math::sin(player.angle) * 20.0) * scale,
+            (player.x + Math::cos(player.angle)) * scale,
+            (player.y + Math::sin(player.angle)) * scale,
         );
         ctx.close_path();
         ctx.stroke();

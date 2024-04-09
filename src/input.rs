@@ -21,9 +21,12 @@ pub fn init_keyboard(canvas: Rc<HtmlCanvasElement>, p: Rc<RefCell<Player>>) -> R
         canvas.add_event_listener_with_callback("click", canvas_click.as_ref().unchecked_ref())?;
         canvas_click.forget();
     }
+
+    //set angle
     {
         let p = p.clone();
         let func = move |event: MouseEvent| {
+            event.prevent_default();
             p.borrow_mut().set_angle(event.movement_x() as f64);
 
             let debug = format!("{:?}", p);
@@ -41,9 +44,11 @@ pub fn init_keyboard(canvas: Rc<HtmlCanvasElement>, p: Rc<RefCell<Player>>) -> R
         mousemove_closure.forget();
     }
 
+    //Keyboard Input
     {
         let p = p.clone();
         let keydown_closure = Closure::<dyn FnMut(KeyboardEvent)>::new(move |e: KeyboardEvent| {
+            e.prevent_default();
             let mut p = p.borrow_mut();
 
             if e.key() == "w" {
@@ -63,9 +68,11 @@ pub fn init_keyboard(canvas: Rc<HtmlCanvasElement>, p: Rc<RefCell<Player>>) -> R
         keydown_closure.forget();
     }
 
+    //keyboard release event
     {
         let p = p.clone();
         let keyup_closure = Closure::<dyn FnMut(KeyboardEvent)>::new(move |e: KeyboardEvent| {
+            e.prevent_default();
             let mut p = p.borrow_mut();
             if e.key() == "w" || e.key() == "s" {
                 p.set_speed(0);

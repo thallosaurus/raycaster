@@ -1,6 +1,8 @@
 use wasm_bindgen::prelude::*;
 use web_sys::js_sys::{wasm_bindgen, Math};
 
+use crate::CELL_SIZE;
+
 #[wasm_bindgen]
 #[derive(Debug)]
 pub struct Player {
@@ -16,8 +18,8 @@ impl Player {
     #[wasm_bindgen(constructor)]
     pub fn new() -> Self {
         Self {
-            x: 2.0,
-            y: 2.0,
+            x: 1.0 * CELL_SIZE as f64,
+            y: 1.0 * CELL_SIZE as f64,
             angle: 0.0_f64.to_radians(),
             speed: 0
         }

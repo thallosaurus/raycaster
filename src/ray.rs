@@ -1,4 +1,4 @@
-use std::{borrow::Borrow, cell::RefCell, rc::Rc};
+use std::cell::RefCell;
 
 use web_sys::js_sys::Math;
 use crate::{get_fov, map::{GameMap, MapElement}, player::Player, CELL_SIZE};
@@ -54,11 +54,11 @@ fn get_v_collision(angle: f64, player: &Player, map: &GameMap) -> Collision {
 
     let y_a = x_a * Math::tan(angle);
 
-    let wall: u8 = 0;
+    let mut wall: u8 = 0;
     let mut next_x = first_x;
     let mut next_y = first_y;
     
-    while wall == 1 {
+    while wall == 0 {
         let cell_x = if right > 0.0 {
             Math::floor(next_x / cell_size) as u8
         } else {
@@ -71,19 +71,18 @@ fn get_v_collision(angle: f64, player: &Player, map: &GameMap) -> Collision {
             break;
         }
 
-        /*if let Some(w) = map.get_xy(cell_x, cell_y) {
-            if w == 0 {
-                next_x += x_a;
-                next_y += y_a;
-            }
-        }*/
         let d = map.get(cell_x, cell_y);
+
+
         match d {
             MapElement::Void => {
                 next_x += x_a;
                 next_y += y_a;
+                wall = d.into();
             },
-            _ => {}
+            _ => {
+                wall = d.into();
+            }
         }
     }
 
@@ -115,11 +114,11 @@ fn get_h_collision(angle: f64, player: &Player, map: &GameMap) -> Collision {
 
     let x_a = y_a / Math::tan(angle);
 
-    let wall = 0;
+    let mut wall = 0;
     let mut next_x = first_x;
     let mut next_y = first_y;
 
-    while wall == 1 {
+    while wall == 0 {
         let cell_x = (Math::floor(next_x / cell_size)) as u8;
         let cell_y = if up > 0.0 {
             (Math::floor(next_y / cell_size) - 1.0) as u8
@@ -137,13 +136,12 @@ fn get_h_collision(angle: f64, player: &Player, map: &GameMap) -> Collision {
             MapElement::Void => {
                 next_x += x_a;
                 next_y += y_a;
+                wall = d.into();
             },
-            _ => {}
+            _ => {
+                wall = d.into();
+            }
         }
-
-        /*if let Some(w) = map.get_xy(cell_x, cell_y) {
-            if w == 0 {
-        }*/
     }
 
     Collision {

@@ -18,12 +18,9 @@ use web_sys::CanvasRenderingContext2d;
 pub static CELL_SIZE: u32 = 32;
 
 #[wasm_bindgen]
-pub fn init_panic_hook() {
-    console_error_panic_hook::set_once();
-}
-
-#[wasm_bindgen]
 pub fn main() -> Result<(), JsValue> {
+    utils::set_panic_hook();
+
     //create canvas
     let window = web_sys::window().expect("no global window found; are we running in a browser?");
     let document = window
@@ -60,10 +57,7 @@ pub fn main() -> Result<(), JsValue> {
     c.set_width(inner_width);
     c.set_height(inner_height);
 
-    //let canvas_copy = canvas.clone();
-
     let resize_callback = Closure::<dyn Fn()>::new(move || {
-        //let window = web_sys::window().expect("no global window found in this context");
         let inner_width = get_screen_width() as u32;
         let inner_height = get_screen_height() as u32;
         c.set_width(inner_width);
@@ -124,7 +118,7 @@ fn request_animation_frame(f: &Closure<dyn FnMut()>) {
 }
 
 fn get_fov() -> f64 {
-    120.0_f64.to_radians()
+    60.0_f64.to_radians()
 }
 
 fn get_screen_height() -> f64 {
