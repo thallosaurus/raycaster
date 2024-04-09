@@ -39,12 +39,14 @@ pub fn main() -> Result<(), JsValue> {
     canvas.set_id("main_canvas");
     body.append_child(&canvas)?;
 
+    let c = Rc::new(canvas);
+
     let player = Rc::new(RefCell::new(Player::new()));
 
-    init_keyboard(&canvas, player.clone())?;
+    init_keyboard(c.clone(), player.clone())?;
 
     // Gather 2d Context
-    let context = canvas
+    let context = c
         .get_context("2d")
         .expect("couldn't get context from canvas");
     let context = context
@@ -55,17 +57,17 @@ pub fn main() -> Result<(), JsValue> {
     //Initial Resize
     let inner_width = get_screen_width() as u32;
     let inner_height = get_screen_height() as u32;
-    canvas.set_width(inner_width);
-    canvas.set_height(inner_height);
+    c.set_width(inner_width);
+    c.set_height(inner_height);
 
-    let canvas_copy = canvas.clone();
+    //let canvas_copy = canvas.clone();
 
     let resize_callback = Closure::<dyn Fn()>::new(move || {
         //let window = web_sys::window().expect("no global window found in this context");
         let inner_width = get_screen_width() as u32;
         let inner_height = get_screen_height() as u32;
-        canvas_copy.set_width(inner_width);
-        canvas_copy.set_height(inner_height);
+        c.set_width(inner_width);
+        c.set_height(inner_height);
     });
     window.add_event_listener_with_callback("resize", resize_callback.as_ref().unchecked_ref())?;
     resize_callback.forget();

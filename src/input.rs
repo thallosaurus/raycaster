@@ -8,37 +8,27 @@ use web_sys::{console, HtmlCanvasElement, KeyboardEvent, MouseEvent};
 
 use crate::{player::Player, window};
 
-pub fn init_keyboard(canvas: &HtmlCanvasElement, p: Rc<RefCell<Player>>) -> Result<(), JsValue> {
+pub fn init_keyboard(canvas: Rc<HtmlCanvasElement>, p: Rc<RefCell<Player>>) -> Result<(), JsValue> {
     let document = window().document().unwrap();
 
     //capture mouse
     {
-        let c = Rc::new(canvas);
+        let c = canvas.clone();
         let canvas_click = Closure::<dyn FnMut()>::new(move || {
-
+            c.request_pointer_lock();
         });
+
+        canvas.add_event_listener_with_callback("click", canvas_click.as_ref().unchecked_ref())?;
+        canvas_click.forget();
     }
     {
         let p = p.clone();
         let func = move |event: MouseEvent| {
-            //console::log_1(&JsValue::from_str("Mousemove"));
-
-            //let pl = p.to_owned();
-            //rc.borrow_mut().set_angle(Math::random() * 10.0);
-            //p.set_angle(Math::random() * 10.0);
-            //p.borrow_mut().set_angle(Math::random() * 10.0);
             p.borrow_mut().set_angle(event.movement_x() as f64);
-
-            //pl.borrow()
 
             let debug = format!("{:?}", p);
 
             console::log_1(&JsValue::from_str(debug.as_str()));
-
-            /*let rc = Rc::clone(p);
-            let mut rc = rc.borrow_mut();
-            let rc = rc.deref_mut();
-            rc.set_angle(event.movement_x() as f64);*/
         };
 
         let mousemove_closure = Closure::<dyn FnMut(MouseEvent)>::new(func);
@@ -54,17 +44,12 @@ pub fn init_keyboard(canvas: &HtmlCanvasElement, p: Rc<RefCell<Player>>) -> Resu
     {
         let p = p.clone();
         let keydown_closure = Closure::<dyn FnMut(KeyboardEvent)>::new(move |e: KeyboardEvent| {
-            //let p = p.clone();
-            //web_sys::console::log_1(&JsValue::from_str(e.key().as_str()));
-            //p.set_angle(event.movement_x() as f64);
-
             let mut p = p.borrow_mut();
 
             if e.key() == "w" {
                 p.set_speed(2);
             }
             if e.key() == "s" {
-                //web_sys::console::log_1(&JsValue::from_str("Arrow Down"));
                 p.set_speed(-2);
             }
             let debug = format!("{:?}", p);
@@ -78,15 +63,9 @@ pub fn init_keyboard(canvas: &HtmlCanvasElement, p: Rc<RefCell<Player>>) -> Resu
         keydown_closure.forget();
     }
 
-    /*let click_closure = Closure::new(|| {
-
-    })*/
-
     {
         let p = p.clone();
         let keyup_closure = Closure::<dyn FnMut(KeyboardEvent)>::new(move |e: KeyboardEvent| {
-            //let p = p.clone();
-            //web_sys::console::log_1(&JsValue::from_str(e.key().as_str()));
             let mut p = p.borrow_mut();
             if e.key() == "w" || e.key() == "s" {
                 p.set_speed(0);
